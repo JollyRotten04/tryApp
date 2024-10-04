@@ -1,14 +1,43 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\CheckAge;
 
 /*Route::get('/', function () {
     return view('welcome');
 });*/
 
+// Route::get('/', function () {
+//     return view('homepage');
+// });
+
 Route::get('/', function () {
-    return view('homepage');
-});
+    // Your homepage logic...
+})->middleware([CheckAge::class])->name('homepage');
+
+Route::get('/age_prompt', function () {
+    return view('age_prompt'); // Render the age_prompt view
+})->name('age_prompt');
+
+Route::get('/unauthorized', function () {
+    return view('unauthorized'); // Return your unauthorized view
+})->name('unauthorized');
+
+// Route that enforces a 21-year-old restriction
+// Route::get('/restricted', function () {
+//     return view('restricted'); // Render the restricted view
+// })->middleware([CheckAge::class . ':21'])->name('restricted');
+
+Route::post('/set-age', function (Illuminate\Http\Request $request) {
+    $request->validate(['age' => 'required|integer|min:0']);
+    
+    session(['user_age' => $request->input('age')]);
+    
+    // Log the session to verify that user_age is set
+    Log::info('Session data after setting age: ', session()->all());
+
+    return redirect('/'); // Ensure to redirect to a route with middleware
+})->name('set.age');
 
 Route::get('/about', function () {
     $username = session('username', 'Guest');
@@ -94,3 +123,13 @@ Route::get('/user/{username}', function ($username) {
 Route::get('/Layout', function () {
     return view('../components/Layout');
 });
+
+// Route::group(['middleware' => 'CheckAge'], function () {
+//     Route::get('/', function () {
+//         return view('homepage');
+//     })->name('homepage');
+
+//     Route::get('/dashboard', function () {
+//         return view('dashboard');
+//     })->name('dashboard');
+// });
