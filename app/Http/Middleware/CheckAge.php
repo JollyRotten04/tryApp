@@ -27,7 +27,7 @@ class CheckAge
             Log::info('User age found in session: ' . $age); // Log user age
             
             if ($age < 18) {
-                Log::warning('User is under 18, redirecting to unauthorized page.');
+                // Log::warning('User is under 18, redirecting to unauthorized page.');
                 return redirect()->route('unauthorized');
             }
 
